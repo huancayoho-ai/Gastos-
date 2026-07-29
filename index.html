@@ -20,60 +20,119 @@
             font-family: 'Calibri Light';
             src: local('Calibri Light'), local('Calibri-Light');
         }
+        :root {
+            --bg: #1f2329;
+            --panel: rgba(38, 43, 52, 0.95);
+            --panel-2: rgba(255, 255, 255, 0.06);
+            --text: #f3f4f6;
+            --muted: #9aa2ad;
+            --accent: #6c7a8a;
+            --accent-2: #8ba0b8;
+        }
         body {
-            background-color: #000000;
-            color: #ffffff;
+            background:
+                radial-gradient(circle at top left, rgba(108, 122, 138, 0.22), transparent 32%),
+                linear-gradient(135deg, #1b1f25 0%, #2a3038 100%);
+            color: var(--text);
             font-family: 'Calibri Light', Calibri, sans-serif;
             font-weight: 300;
             -webkit-tap-highlight-color: transparent;
-            padding-bottom: 120px !important; /* Espacio para el menú inferior */
+            padding-bottom: 120px !important;
+            min-height: 100vh;
         }
-        /* Ajustes para simular interfaz nativa de iOS */
+        .app-shell {
+            padding-top: 6px;
+        }
+        .hero-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 24px;
+            padding: 16px 18px;
+            margin-bottom: 18px;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(12px);
+        }
+        .hero-card h1 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: #ffffff;
+            margin: 0;
+        }
+        .hero-card p {
+            margin: 6px 0 0;
+            font-size: 0.82rem;
+            color: #b8bcc8;
+        }
         .ios-group {
-            background-color: #1c1c1e;
-            border-radius: 10px;
+            background: linear-gradient(180deg, rgba(41, 47, 56, 0.97), rgba(31, 36, 44, 0.97));
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 18px;
             overflow: hidden;
             margin-bottom: 24px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
         }
         .ios-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 16px;
-            border-bottom: 0.5px solid #38383a;
-            min-height: 44px;
+            padding: 13px 14px;
+            border-bottom: 0.5px solid rgba(255,255,255,0.08);
+            min-height: 54px;
+            gap: 12px;
         }
         .ios-row:last-child {
             border-bottom: none;
         }
         .ios-label {
-            font-size: 16px;
-            color: #ffffff;
+            font-size: 15px;
+            color: #f4f4f6;
             white-space: nowrap;
+            font-weight: 500;
+            flex: 1;
+            min-width: 0;
         }
         .ios-input-ghost {
-            background: transparent;
-            border: none;
-            color: #8e8e93;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid transparent;
+            color: #f2f4f8;
             text-align: right;
-            font-size: 16px;
-            width: 60%;
+            font-size: 15px;
+            width: 56%;
+            max-width: 220px;
             outline: none;
             font-family: 'Calibri Light', Calibri, sans-serif;
+            border-radius: 10px;
+            padding: 8px 10px;
+            min-height: 40px;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
         }
         .ios-input-ghost:focus {
             color: #ffffff;
+            border-color: rgba(10, 132, 255, 0.45);
+            background: rgba(10, 132, 255, 0.08);
         }
         .ios-select-ghost {
-            background: transparent;
-            border: none;
-            color: #8e8e93;
-            font-size: 16px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid transparent;
+            color: #f2f4f8;
+            font-size: 15px;
             outline: none;
             appearance: none;
             direction: rtl;
             font-family: 'Calibri Light', Calibri, sans-serif;
-            width: 75%;
+            width: 56%;
+            max-width: 220px;
+            border-radius: 10px;
+            padding: 8px 10px;
+            min-height: 40px;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        .ios-select-ghost:focus {
+            border-color: rgba(10, 132, 255, 0.45);
+            background: rgba(10, 132, 255, 0.08);
         }
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { 
@@ -82,26 +141,27 @@
         }
         .section-title {
             color: #8e8e93;
-            font-size: 13px;
+            font-size: 11px;
             text-transform: uppercase;
-            margin-left: 16px;
-            margin-bottom: 6px;
-            letter-spacing: 0.5px;
+            margin-left: 8px;
+            margin-bottom: 8px;
+            letter-spacing: 0.22em;
+            font-weight: 600;
         }
-        /* Menú inferior estilo iOS */
         .tab-bar {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background-color: rgba(28, 28, 30, 0.95);
-            backdrop-filter: blur(10px);
-            border-top: 0.5px solid #38383a;
+            background: rgba(26, 30, 36, 0.94);
+            backdrop-filter: blur(16px);
+            border-top: 0.5px solid rgba(255,255,255,0.08);
             display: flex;
             justify-content: space-around;
             padding-top: 10px;
-            padding-bottom: 25px; /* SafeArea spacing */
+            padding-bottom: 24px;
             z-index: 50;
+            box-shadow: 0 -10px 24px rgba(0, 0, 0, 0.28);
         }
         .tab-item {
             display: flex;
@@ -109,26 +169,104 @@
             align-items: center;
             font-size: 10px;
             color: #8e8e93;
+            transition: all 0.2s ease;
+            padding: 2px 8px;
+            border-radius: 999px;
         }
         .tab-item.active {
-            color: #0a84ff;
+            color: #ffffff;
+            background: rgba(10, 132, 255, 0.15);
         }
         .tab-icon {
             font-size: 20px;
             margin-bottom: 2px;
+            transition: transform 0.2s ease;
+        }
+        .tab-item.active .tab-icon {
+            transform: translateY(-1px);
+        }
+        button[type="submit"] {
+            background: linear-gradient(135deg, #6c7a8a 0%, #8ba0b8 100%);
+            border: none;
+            box-shadow: 0 10px 22px rgba(80, 95, 110, 0.28);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+        }
+        button[type="submit"]:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 14px 22px rgba(80, 95, 110, 0.34);
+        }
+        button[type="submit"]:active {
+            transform: scale(0.98);
         }
         #tab-registro,
         #tab-resumen,
         #tab-detalle {
             padding-bottom: 120px;
         }
+        .category-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 12px 12px 10px;
+            text-align: left;
+            color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-height: 94px;
+            transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+        }
+        .category-card.active {
+            border-color: rgba(10, 132, 255, 0.45);
+            background: linear-gradient(135deg, rgba(10, 132, 255, 0.2), rgba(255,255,255,0.06));
+            transform: translateY(-1px);
+        }
+        .detalle-tabla {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            font-size: 0.78rem;
+        }
+        .detalle-tabla th,
+        .detalle-tabla td {
+            padding: 8px 6px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .detalle-tabla th:nth-child(2),
+        .detalle-tabla td:nth-child(2) {
+            width: 24%;
+        }
+        .detalle-tabla th:nth-child(3),
+        .detalle-tabla td:nth-child(3),
+        .detalle-tabla th:nth-child(4),
+        .detalle-tabla td:nth-child(4),
+        .detalle-tabla th:nth-child(5),
+        .detalle-tabla td:nth-child(5) {
+            width: 13%;
+        }
+        .detalle-tabla th:nth-child(6),
+        .detalle-tabla td:nth-child(6),
+        .detalle-tabla th:nth-child(7),
+        .detalle-tabla td:nth-child(7) {
+            width: 12%;
+        }
+        .detalle-tabla th:nth-child(1),
+        .detalle-tabla td:nth-child(1) {
+            width: 11%;
+        }
     </style>
 </head>
 <body class="p-4 sm:p-6" style="padding-bottom: 140px;">
 
-    <div class="max-w-md mx-auto" style="padding-bottom: 120px;">
+    <div class="max-w-md mx-auto app-shell" style="padding-bottom: 120px;">
         
-        <h1 class="text-2xl text-center text-white mb-6 mt-2 font-normal tracking-wide">Gastos O&A 🤍</h1>
+        <div class="hero-card text-center">
+            <div class="text-[10px] uppercase tracking-[0.3em] text-[#8e8e93] mb-2">Control de gastos</div>
+            <h1>Omar y Abi ♡</h1>
+            <p>Tu día a día, cuotas y tarjetas en una sola vista</p>
+        </div>
 
         <!-- ================= PESTAÑA 1: REGISTRO ================= -->
         <div id="tab-registro" class="block" style="padding-bottom: 120px;">
@@ -166,6 +304,18 @@
                             <option value="17">17 cuotas</option>
                             <option value="18">18 cuotas</option>
                         </select>
+                    </div>
+                    <div class="px-4 pb-3">
+                        <div class="rounded-lg bg-[#121212] px-3 py-2 text-xs text-gray-400">
+                            <div class="flex justify-between">
+                                <span>Total</span>
+                                <span id="resumen-total-cuotas" class="text-white font-normal">S/ 0.00</span>
+                            </div>
+                            <div class="flex justify-between mt-1">
+                                <span>Monto por cuota</span>
+                                <span id="resumen-cuota" class="text-[#0a84ff] font-normal">S/ 0.00</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="ios-row">
                         <span class="ios-label">Categoría</span>
@@ -271,7 +421,7 @@
         <!-- ================= PESTAÑA 2: RESUMEN POR MESES Y TARJETAS ================= -->
         <div id="tab-resumen" class="hidden" style="padding-bottom: 120px;">
             <div class="section-title mb-4 text-center">Facturación y Fechas de Pago</div>
-            <p class="text-xs text-gray-400 text-center mb-6">Ciclo: compras del 11 al 10 de cada mes | Pago: 30 del mes siguiente</p>
+            <p class="text-xs text-gray-400 text-center mb-6">Ciclo: 11 al 10 para otras tarjetas / 4 al 3 para Ripley | Pago: 30 del mes siguiente</p>
 
             <div class="ios-group mb-4">
                 <div class="ios-row">
@@ -338,6 +488,99 @@
         const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let gastos = [];
+        let categoriaDetalleActiva = null;
+        let recordatoriosProgramados = [];
+
+        function obtenerFechaPago(fechaStr, metodoPago = null) {
+            const [year, month, day] = fechaStr.split('-').map(Number);
+            const esRipley = metodoPago === 'Tarjeta Ripley';
+            let cicloMonth = month;
+            let cicloYear = year;
+
+            if (esRipley) {
+                if (day <= 3) {
+                    cicloMonth--;
+                    if (cicloMonth < 1) {
+                        cicloMonth = 12;
+                        cicloYear--;
+                    }
+                }
+            } else if (day > 11) {
+                cicloMonth++;
+                if (cicloMonth > 12) {
+                    cicloMonth = 1;
+                    cicloYear++;
+                }
+            }
+
+            let paymentMonth;
+            let paymentYear = cicloYear;
+            if (esRipley) {
+                paymentMonth = day >= 4 ? month + 2 : month + 1;
+                while (paymentMonth > 12) {
+                    paymentMonth -= 12;
+                    paymentYear++;
+                }
+            } else {
+                paymentMonth = cicloMonth + 1;
+                if (paymentMonth > 12) {
+                    paymentMonth = 1;
+                    paymentYear++;
+                }
+            }
+
+            let paymentDay = 30;
+            if (paymentMonth === 2) {
+                const isLeap = (paymentYear % 4 === 0 && paymentYear % 100 !== 0) || (paymentYear % 400 === 0);
+                paymentDay = isLeap ? 29 : 28;
+            }
+
+            return new Date(paymentYear, paymentMonth - 1, paymentDay);
+        }
+
+        function mostrarAlertaRecordatorio(fechaPago, titulo) {
+            const hoy = new Date();
+            const fechaAviso = new Date(fechaPago);
+            fechaAviso.setDate(fechaAviso.getDate() - 1);
+
+            if (hoy.toDateString() !== fechaAviso.toDateString()) {
+                return;
+            }
+
+            const mensaje = `${titulo}\nMañana tienes que pagar algo.`;
+            if (window.Notification && Notification.permission === 'granted') {
+                new Notification('Recordatorio de pago', { body: mensaje });
+            }
+            alert(mensaje);
+        }
+
+        function solicitarPermisoNotificaciones() {
+            if (!('Notification' in window)) return;
+            if (Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        }
+
+        function programarRecordatorios() {
+            recordatoriosProgramados.forEach(id => clearTimeout(id));
+            recordatoriosProgramados = [];
+
+            gastos.forEach((g) => {
+                const fechaPago = obtenerFechaPago(g.fecha, g.metodoPago);
+                const fechaAviso = new Date(fechaPago);
+                fechaAviso.setDate(fechaAviso.getDate() - 1);
+                const ahora = new Date();
+                const diffMs = fechaAviso.getTime() - ahora.getTime();
+
+                if (diffMs <= 0) return;
+
+                const timeoutId = setTimeout(() => {
+                    mostrarAlertaRecordatorio(fechaPago, `${g.tienda} · ${g.metodoPago}`);
+                }, diffMs);
+
+                recordatoriosProgramados.push(timeoutId);
+            });
+        }
 
         // Convierte una fila de Supabase (snake_case) al formato que usa la app (camelCase)
         function filaASistema(f) {
@@ -369,6 +612,8 @@
             }
 
             gastos = data.map(filaASistema);
+            solicitarPermisoNotificaciones();
+            programarRecordatorios();
             actualizarUIRegistro();
             popularFiltrosMesResumen();
             popularFiltrosDetalle();
@@ -406,14 +651,22 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Determinar el ciclo de facturación basado en compras del 11 al 10
-        function getCicloInfo(fechaStr) {
+        // Determinar el ciclo de facturación según la tarjeta
+        function getCicloInfo(fechaStr, metodoPago = null) {
             const [year, month, day] = fechaStr.split('-').map(Number);
+            const esRipley = metodoPago === 'Tarjeta Ripley';
             let cicloMonth = month;
             let cicloYear = year;
             
-            // Del 11 al 10 del mes siguiente pertenecen al mismo ciclo de facturación
-            if (day > 11) {
+            if (esRipley) {
+                if (day <= 3) {
+                    cicloMonth--;
+                    if (cicloMonth < 1) {
+                        cicloMonth = 12;
+                        cicloYear--;
+                    }
+                }
+            } else if (day > 11) {
                 cicloMonth++;
                 if (cicloMonth > 12) {
                     cicloMonth = 1;
@@ -423,12 +676,20 @@
             
             const monthNames = ["", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
             
-            // La fecha de pago es el 30 del mes siguiente al ciclo
-            let paymentMonth = cicloMonth + 1;
+            let paymentMonth;
             let paymentYear = cicloYear;
-            if (paymentMonth > 12) {
-                paymentMonth = 1;
-                paymentYear++;
+            if (esRipley) {
+                paymentMonth = day >= 4 ? month + 2 : month + 1;
+                while (paymentMonth > 12) {
+                    paymentMonth -= 12;
+                    paymentYear++;
+                }
+            } else {
+                paymentMonth = cicloMonth + 1;
+                if (paymentMonth > 12) {
+                    paymentMonth = 1;
+                    paymentYear++;
+                }
             }
             
             let paymentDay = 30;
@@ -464,6 +725,15 @@
             recalcularPagos();
         }
 
+        function actualizarResumenCuotas() {
+            const total = parseFloat(document.getElementById('monto_total').value) || 0;
+            const cuotas = parseInt(document.getElementById('cuotas').value) || 0;
+            const montoPorCuota = cuotas > 1 ? total / cuotas : total;
+
+            document.getElementById('resumen-total-cuotas').innerText = 'S/ ' + total.toFixed(2);
+            document.getElementById('resumen-cuota').innerText = 'S/ ' + montoPorCuota.toFixed(2);
+        }
+
         function recalcularPagos() {
             const total = parseFloat(document.getElementById('monto_total').value) || 0;
             const pctOmar = parseFloat(document.getElementById('porcentaje_omar').value) || 0;
@@ -481,9 +751,11 @@
 
             document.getElementById('pago_omar_text').innerText = 'S/ ' + pagoOmar;
             document.getElementById('pago_abigail_text').innerText = 'S/ ' + pagoAbigail;
+            actualizarResumenCuotas();
         }
 
         document.getElementById('monto_total').addEventListener('input', recalcularPagos);
+        document.getElementById('cuotas').addEventListener('change', actualizarResumenCuotas);
         document.getElementById('porcentaje_omar').addEventListener('change', () => sincronizarPorcentajes('omar'));
         document.getElementById('porcentaje_abigail').addEventListener('change', () => sincronizarPorcentajes('abigail'));
 
@@ -529,6 +801,7 @@
             }
 
             gastos.push(filaASistema(data[0]));
+            programarRecordatorios();
 
             // Reset parcial
             document.getElementById('monto_total').value = '';
@@ -660,7 +933,7 @@
 
         function getCiclosDeGasto(g) {
             const cuotas = Number(g.cuotas) || 1;
-            const cicloBaseId = getCicloInfo(g.fecha).id;
+            const cicloBaseId = getCicloInfo(g.fecha, g.metodoPago).id;
 
             if (cuotas <= 1) {
                 return [cicloBaseId];
@@ -690,7 +963,7 @@
             }
 
             const cuotas = Number(g.cuotas);
-            const cicloBaseId = getCicloInfo(g.fecha).id;
+            const cicloBaseId = getCicloInfo(g.fecha, g.metodoPago).id;
             const diff = getMesDiff(cicloBaseId, cicloId);
 
             if (diff < 0) {
@@ -743,7 +1016,7 @@
 
             if (mesSeleccionado !== 'todos') {
                 compras = compras.filter(g => {
-                    const cicloBaseId = getCicloInfo(g.fecha).id;
+                    const cicloBaseId = getCicloInfo(g.fecha, g.metodoPago).id;
                     const diff = getMesDiff(cicloBaseId, mesSeleccionado);
 
                     if (!g.cuotas || Number(g.cuotas) <= 1) {
@@ -760,54 +1033,96 @@
 
             if (compras.length === 0) {
                 contenedor.innerHTML = '<div class="text-center text-gray-500 mt-6">No hay compras para esos filtros.</div>';
+                categoriaDetalleActiva = null;
                 return;
             }
 
-            contenedor.innerHTML = compras.map(g => {
+            const porCategoria = compras.reduce((acc, g) => {
+                const categoria = (g.concepto || 'Sin categoría').trim() || 'Sin categoría';
+                if (!acc[categoria]) {
+                    acc[categoria] = [];
+                }
+                acc[categoria].push(g);
+                return acc;
+            }, {});
+
+            const categorias = Object.entries(porCategoria).map(([categoria, items]) => {
+                const totalCategoria = items.reduce((sum, g) => sum + parseFloat(g.montoTotal || 0), 0);
+                return { categoria, items, totalCategoria };
+            }).sort((a, b) => b.totalCategoria - a.totalCategoria || a.categoria.localeCompare(b.categoria));
+
+            if (!categoriaDetalleActiva || !categorias.some(c => c.categoria === categoriaDetalleActiva)) {
+                categoriaDetalleActiva = categorias[0]?.categoria || null;
+            }
+
+            const categoriaActiva = categoriaDetalleActiva;
+            const itemsActivos = categorias.find(c => c.categoria === categoriaActiva)?.items || [];
+
+            const cards = categorias.map(({ categoria, totalCategoria, items }) => `
+                <button type="button" class="category-card ${categoria === categoriaActiva ? 'active' : ''}" data-categoria="${categoria}">
+                    <div class="text-[11px] uppercase tracking-[0.25em] text-gray-400">${categoria}</div>
+                    <div class="text-lg font-semibold text-white">S/ ${totalCategoria.toFixed(2)}</div>
+                    <div class="text-xs text-gray-400">${items.length} compra${items.length === 1 ? '' : 's'}</div>
+                </button>
+            `).join('');
+
+            const filas = itemsActivos.map(g => {
                 const fechaCorta = g.fecha.split('-').slice(1).reverse().join('/');
-                const cicloVisual = mesSeleccionado === 'todos' ? getCicloInfo(g.fecha).id : mesSeleccionado;
+                const cicloVisual = mesSeleccionado === 'todos' ? getCicloInfo(g.fecha, g.metodoPago).id : mesSeleccionado;
                 const cuotaTexto = getCuotaTexto(g, cicloVisual);
                 const montoTexto = getMontoCuotaTexto(g, mesSeleccionado === 'todos' ? null : cicloVisual);
                 const omarCuota = getAporteCuota(g, 'omar');
                 const abigailCuota = getAporteCuota(g, 'abigail');
                 const metodoCorto = g.metodoPago.replace('Tarjeta ', 'T.');
                 return `
-                    <div class="ios-group mb-3">
-                        <div class="grid grid-cols-2 gap-2 p-3 text-sm">
-                            <div>
-                                <div class="text-gray-400 text-[11px] uppercase">Fecha</div>
-                                <div class="text-white">${fechaCorta}</div>
-                            </div>
-                            <div>
-                                <div class="text-gray-400 text-[11px] uppercase">Cuota</div>
-                                <div class="text-white">${cuotaTexto}</div>
-                            </div>
-                            <div>
-                                <div class="text-gray-400 text-[11px] uppercase">Categoría</div>
-                                <div class="text-white">${g.concepto}</div>
-                            </div>
-                            <div>
-                                <div class="text-gray-400 text-[11px] uppercase">Monto</div>
-                                <div class="text-white font-medium text-[12px]">${montoTexto}</div>
-                            </div>
-                        </div>
-                        <div class="border-t border-[#38383a] px-3 py-2 text-[11px] text-gray-400 flex justify-between items-center">
-                            <span>${g.tienda}</span>
-                            <span>${metodoCorto}</span>
-                        </div>
-                        <div class="px-3 pb-3 pt-2">
-                            <div class="flex justify-between text-xs bg-[#121212] rounded p-2 mb-1">
-                                <span class="text-[#0a84ff]">Omar</span>
-                                <span class="text-[#0a84ff]">S/ ${omarCuota.toFixed(2)}</span>
-                            </div>
-                            <div class="flex justify-between text-xs bg-[#121212] rounded p-2">
-                                <span class="text-[#ff375f]">Abigail</span>
-                                <span class="text-[#ff375f]">S/ ${abigailCuota.toFixed(2)}</span>
-                            </div>
-                        </div>
-                    </div>
+                    <tr class="border-b border-[#38383a] text-sm text-gray-300">
+                        <td class="px-3 py-2 whitespace-nowrap">${fechaCorta}</td>
+                        <td class="px-3 py-2">${g.tienda}</td>
+                        <td class="px-3 py-2 whitespace-nowrap">${montoTexto}</td>
+                        <td class="px-3 py-2 whitespace-nowrap">${cuotaTexto}</td>
+                        <td class="px-3 py-2 whitespace-nowrap">${metodoCorto}</td>
+                        <td class="px-3 py-2 whitespace-nowrap text-[#0a84ff]">S/ ${omarCuota.toFixed(2)}</td>
+                        <td class="px-3 py-2 whitespace-nowrap text-[#ff375f]">S/ ${abigailCuota.toFixed(2)}</td>
+                    </tr>
                 `;
             }).join('');
+
+            contenedor.innerHTML = `
+                <div class="grid grid-cols-2 gap-3">
+                    ${cards}
+                </div>
+                <div class="ios-group mt-4 overflow-hidden">
+                    <div class="bg-[#121212] px-3 py-2 flex justify-between items-center">
+                        <span class="text-white font-medium">${categoriaActiva || 'Compras'}</span>
+                        <span class="text-gray-400 text-sm">${itemsActivos.length} compra${itemsActivos.length === 1 ? '' : 's'}</span>
+                    </div>
+                    <div class="overflow-x-hidden">
+                        <table class="detalle-tabla text-left text-gray-300">
+                            <thead class="text-gray-400 text-[10px] uppercase bg-[#1c1c1e]">
+                                <tr>
+                                    <th class="py-2 px-2">Fecha</th>
+                                    <th class="py-2 px-2">Descripción</th>
+                                    <th class="py-2 px-2">Monto</th>
+                                    <th class="py-2 px-2">Cuota</th>
+                                    <th class="py-2 px-2">Tarj.</th>
+                                    <th class="py-2 px-2">Omar</th>
+                                    <th class="py-2 px-2">Abigail</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-[#38383a]">
+                                ${filas}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            contenedor.querySelectorAll('[data-categoria]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    categoriaDetalleActiva = btn.getAttribute('data-categoria');
+                    renderDetalleCompras();
+                });
+            });
         }
 
         function renderizarCiclos() {
@@ -829,8 +1144,8 @@
                 const ciclosCompra = getCiclosDeGasto(g);
 
                 ciclosCompra.forEach((cid, index) => {
-                    const info = getCicloInfo(g.fecha);
-                    const fechaPago = getCicloInfo(g.fecha).fechaPago;
+                    const info = getCicloInfo(g.fecha, g.metodoPago);
+                    const fechaPago = info.fechaPago;
                     const cicloNombre = cid === ciclosCompra[0] ? info.nombre : `${cid.split('-')[0]}-${cid.split('-')[1]}`;
                     
                     if(!ciclos[cid]) {
@@ -926,19 +1241,42 @@
         }
 
         function exportarExcel() {
-            if(gastos.length === 0) return alert('No hay datos.');
-            let csv = "data:text/csv;charset=utf-8,\uFEFFFecha Compra,Ciclo Facturacion,Fecha de Pago,Descripcion Extra,Categoria,Metodo de Pago,Monto Total,Aporte Omar,Aporte Abigail\n";
-            gastos.forEach(g => {
-                let desc = `"${g.tienda.replace(/"/g, '""')}"`;
-                let info = getCicloInfo(g.fecha);
-                csv += `${g.fecha},${info.nombre},${info.fechaPago},${desc},${g.concepto},${g.metodoPago},${g.montoTotal},${g.pagoOmar},${g.pagoAbigail}\n`;
-            });
-            const link = document.createElement("a");
-            link.setAttribute("href", encodeURI(csv));
-            link.setAttribute("download", `Gastos_OyA_${new Date().toISOString().split('T')[0]}.csv`);
+            if (gastos.length === 0) return alert('No hay datos.');
+
+            const filas = [
+                ['Fecha Compra', 'Ciclo Facturación', 'Fecha de Pago', 'Descripción Extra', 'Categoría', 'Método de Pago', 'Monto Total', 'Aporte Omar', 'Aporte Abigail'],
+                ...gastos.map(g => {
+                    const info = getCicloInfo(g.fecha, g.metodoPago);
+                    return [
+                        g.fecha,
+                        info.nombre,
+                        info.fechaPago,
+                        g.tienda,
+                        g.concepto,
+                        g.metodoPago,
+                        g.montoTotal,
+                        g.pagoOmar,
+                        g.pagoAbigail
+                    ];
+                })
+            ];
+
+            const csv = filas.map(row =>
+                row.map(value => {
+                    const texto = String(value ?? '').replace(/"/g, '""');
+                    return `"${texto}"`;
+                }).join(',')
+            ).join('\r\n');
+
+            const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Gastos_OyA_${new Date().toISOString().split('T')[0]}.csv`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            URL.revokeObjectURL(url);
         }
 
         actualizarUIRegistro();
