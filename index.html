@@ -256,6 +256,41 @@
         .detalle-tabla td:nth-child(1) {
             width: 11%;
         }
+        .oro-category-btn {
+            background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 12px;
+            text-align: left;
+            color: #f5f5f5;
+            min-height: 84px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.18s ease;
+        }
+        .oro-category-btn.active {
+            border-color: rgba(10, 132, 255, 0.45);
+            background: linear-gradient(135deg, rgba(10, 132, 255, 0.2), rgba(255,255,255,0.06));
+            transform: translateY(-1px);
+        }
+        .oro-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 12px 12px 10px;
+        }
+        .oro-progress {
+            height: 6px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.12);
+            overflow: hidden;
+        }
+        .oro-progress > div {
+            height: 100%;
+            background: linear-gradient(90deg, #0a84ff, #30d158);
+            border-radius: inherit;
+        }
     </style>
 </head>
 <body class="p-4 sm:p-6" style="padding-bottom: 140px;">
@@ -263,9 +298,7 @@
     <div class="max-w-md mx-auto app-shell" style="padding-bottom: 120px;">
         
         <div class="hero-card text-center">
-            <div class="text-[10px] uppercase tracking-[0.3em] text-[#8e8e93] mb-2">Control de gastos</div>
-            <h1>Omar y Abi ♡</h1>
-            <p>Tu día a día, cuotas y tarjetas en una sola vista</p>
+            <h1 id="hero-title">Gastos O&A</h1>
         </div>
 
         <!-- ================= PESTAÑA 1: REGISTRO ================= -->
@@ -332,7 +365,7 @@
                         <select id="metodo_pago" required class="ios-select-ghost">
                             <option value="Tarjeta Qore">💳 Tarjeta Qore</option>
                             <option value="Tarjeta Oro">💳 Tarjeta Oro</option>
-                            <option value="Tarjeta Ripley">💳 Tarjeta Ripley</option>
+                            <option value="Tarjeta Interbank">💳 Tarjeta Interbank</option>
                         </select>
                     </div>
                     <div class="ios-row">
@@ -391,72 +424,114 @@
                     Guardar Registro
                 </button>
             </form>
-
-            <div class="flex justify-between items-end mt-10 mb-2 px-2">
-                <div class="section-title !mb-0 !ml-2">Últimos Registros (Mes Actual)</div>
-                <button onclick="exportarExcel()" class="text-[#30d158] text-sm font-normal px-2 active:opacity-50">
-                    Excel ⬇
-                </button>
-            </div>
-            
-            <div class="ios-group mb-4">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full text-left text-sm text-gray-300">
-                        <thead class="border-b border-[#38383a] text-gray-500 text-xs uppercase bg-[#121212]">
-                            <tr>
-                                <th class="px-3 py-3 font-normal">Día</th>
-                                <th class="px-3 py-3 font-normal">Descripción</th>
-                                <th class="px-3 py-3 font-normal">Total</th>
-                                <th class="px-3 py-3 text-center font-normal">X</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-gastos" class="divide-y divide-[#38383a]">
-                            <!-- Los registros aparecerán aquí -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
 
-        <!-- ================= PESTAÑA 2: RESUMEN POR MESES Y TARJETAS ================= -->
-        <div id="tab-resumen" class="hidden" style="padding-bottom: 120px;">
-            <div class="section-title mb-4 text-center">Facturación y Fechas de Pago</div>
-            <p class="text-xs text-gray-400 text-center mb-6">Ciclo: 11 al 10 para otras tarjetas / 4 al 3 para Ripley | Pago: 30 del mes siguiente</p>
+        <!-- ================= PESTAÑA 2: TARJETA ORO ================= -->
+        <div id="tab-oro" class="hidden" style="padding-bottom: 120px;">
+            <div class="section-title mb-3 text-center">Tarjeta ORO</div>
 
             <div class="ios-group mb-4">
-                <div class="ios-row">
-                    <span class="ios-label">Mes de facturación</span>
-                    <select id="filtro-ciclo" class="ios-select-ghost">
-                        <option value="todos">Todos</option>
-                    </select>
+                <div class="flex items-center justify-between px-4 py-3 border-b border-[#38383a]">
+                    <div class="text-[10px] uppercase tracking-[0.24em] text-[#8e8e93]">Ciclo</div>
+                    <button id="oro-ciclo-toggle" type="button" class="text-sm text-white font-normal">Cargando...</button>
+                </div>
+                <div id="oro-ciclos-list" class="hidden border-b border-[#38383a] bg-[#121212] px-3 py-2"></div>
+                <div class="p-4">
+                    <div class="text-[11px] uppercase tracking-[0.24em] text-[#8e8e93]">Total usado</div>
+                    <div id="oro-total" class="text-4xl font-semibold text-white mt-1">S/ 0.00</div>
+                    <div class="grid grid-cols-2 gap-2 mt-4">
+                        <div class="rounded-xl bg-[#121212] p-3">
+                            <div class="text-[11px] uppercase tracking-[0.2em] text-[#8e8e93]">Omar paga</div>
+                            <div id="oro-pago-omar" class="text-[#0a84ff] font-medium mt-1">S/ 0.00</div>
+                        </div>
+                        <div class="rounded-xl bg-[#121212] p-3">
+                            <div class="text-[11px] uppercase tracking-[0.2em] text-[#8e8e93]">Abi paga</div>
+                            <div id="oro-pago-abi" class="text-[#ff375f] font-medium mt-1">S/ 0.00</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-            <div id="contenedor-ciclos">
-                <!-- Los ciclos generados por JS irán aquí -->
-            </div>
+
+            <div class="section-title mb-2">Por categoría</div>
+            <div id="oro-categorias" class="grid grid-cols-2 gap-2 mb-4"></div>
+
+            <div class="section-title mb-2">Compras en cuotas</div>
+            <div id="oro-cuotas" class="space-y-2 mb-4"></div>
+
+            <div class="section-title mb-2">Gastos de la tarjeta</div>
+            <div id="oro-gastos-listado" class="space-y-2"></div>
         </div>
 
-        <!-- ================= PESTAÑA 3: DETALLE POR MES Y TARJETA ================= -->
-        <div id="tab-detalle" class="hidden" style="padding-bottom: 120px;">
-            <div class="section-title mb-4 text-center">Detalle de Compras</div>
+        <!-- ================= PESTAÑA 3: TARJETA QORE ================= -->
+        <div id="tab-qore" class="hidden" style="padding-bottom: 120px;">
+            <div class="section-title mb-3 text-center">Tarjeta Qore</div>
 
-            <div class="ios-group">
-                <div class="ios-row">
-                    <span class="ios-label">Mes</span>
-                    <select id="filtro-mes" class="ios-select-ghost">
-                        <option value="todos">Todos</option>
-                    </select>
+            <div class="ios-group mb-4">
+                <div class="flex items-center justify-between px-4 py-3 border-b border-[#38383a]">
+                    <div class="text-[10px] uppercase tracking-[0.24em] text-[#8e8e93]">Ciclo</div>
+                    <button id="qore-ciclo-toggle" type="button" class="text-sm text-white font-normal">Cargando...</button>
                 </div>
-                <div class="ios-row">
-                    <span class="ios-label">Tarjeta</span>
-                    <select id="filtro-tarjeta" class="ios-select-ghost">
-                        <option value="todos">Todas</option>
-                    </select>
+                <div id="qore-ciclos-list" class="hidden border-b border-[#38383a] bg-[#121212] px-3 py-2"></div>
+                <div class="p-4">
+                    <div class="text-[11px] uppercase tracking-[0.24em] text-[#8e8e93]">Total usado</div>
+                    <div id="qore-total" class="text-4xl font-semibold text-white mt-1">S/ 0.00</div>
+                    <div class="grid grid-cols-2 gap-2 mt-4">
+                        <div class="rounded-xl bg-[#121212] p-3">
+                            <div class="text-[11px] uppercase tracking-[0.2em] text-[#8e8e93]">Omar paga</div>
+                            <div id="qore-pago-omar" class="text-[#0a84ff] font-medium mt-1">S/ 0.00</div>
+                        </div>
+                        <div class="rounded-xl bg-[#121212] p-3">
+                            <div class="text-[11px] uppercase tracking-[0.2em] text-[#8e8e93]">Abi paga</div>
+                            <div id="qore-pago-abi" class="text-[#ff375f] font-medium mt-1">S/ 0.00</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div id="detalle-compras" class="mt-4"></div>
+            <div class="section-title mb-2">Por categoría</div>
+            <div id="qore-categorias" class="grid grid-cols-2 gap-2 mb-4"></div>
+
+            <div class="section-title mb-2">Compras en cuotas</div>
+            <div id="qore-cuotas" class="space-y-2 mb-4"></div>
+
+            <div class="section-title mb-2">Gastos de la tarjeta</div>
+            <div id="qore-gastos-listado" class="space-y-2"></div>
+        </div>
+
+        <!-- ================= PESTAÑA 4: TARJETA INTERBANK ================= -->
+        <div id="tab-ripley" class="hidden" style="padding-bottom: 120px;">
+            <div class="section-title mb-3 text-center">Tarjeta Interbank</div>
+
+            <div class="ios-group mb-4">
+                <div class="flex items-center justify-between px-4 py-3 border-b border-[#38383a]">
+                    <div class="text-[10px] uppercase tracking-[0.24em] text-[#8e8e93]">Ciclo</div>
+                    <button id="ripley-ciclo-toggle" type="button" class="text-sm text-white font-normal">Cargando...</button>
+                </div>
+                <div id="ripley-ciclos-list" class="hidden border-b border-[#38383a] bg-[#121212] px-3 py-2"></div>
+                <div class="p-4">
+                    <div class="text-[11px] uppercase tracking-[0.24em] text-[#8e8e93]">Total usado</div>
+                    <div id="ripley-total" class="text-4xl font-semibold text-white mt-1">S/ 0.00</div>
+                    <div class="grid grid-cols-2 gap-2 mt-4">
+                        <div class="rounded-xl bg-[#121212] p-3">
+                            <div class="text-[11px] uppercase tracking-[0.2em] text-[#8e8e93]">Omar paga</div>
+                            <div id="ripley-pago-omar" class="text-[#0a84ff] font-medium mt-1">S/ 0.00</div>
+                        </div>
+                        <div class="rounded-xl bg-[#121212] p-3">
+                            <div class="text-[11px] uppercase tracking-[0.2em] text-[#8e8e93]">Abi paga</div>
+                            <div id="ripley-pago-abi" class="text-[#ff375f] font-medium mt-1">S/ 0.00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title mb-2">Por categoría</div>
+            <div id="ripley-categorias" class="grid grid-cols-2 gap-2 mb-4"></div>
+
+            <div class="section-title mb-2">Compras en cuotas</div>
+            <div id="ripley-cuotas" class="space-y-2 mb-4"></div>
+
+            <div class="section-title mb-2">Gastos de la tarjeta</div>
+            <div id="ripley-gastos-listado" class="space-y-2"></div>
         </div>
 
     </div>
@@ -467,13 +542,17 @@
             <div class="tab-icon">📝</div>
             <span>Registro</span>
         </div>
-        <div class="tab-item" id="nav-resumen" onclick="switchTab('tab-resumen')">
-            <div class="tab-icon">📊</div>
-            <span>Resumen Ciclos</span>
+        <div class="tab-item" id="nav-oro" onclick="switchTab('tab-oro')">
+            <div class="tab-icon">💳</div>
+            <span>Tarjeta ORO</span>
         </div>
-        <div class="tab-item" id="nav-detalle" onclick="switchTab('tab-detalle')">
-            <div class="tab-icon">🔎</div>
-            <span>Detalle</span>
+        <div class="tab-item" id="nav-qore" onclick="switchTab('tab-qore')">
+            <div class="tab-icon">💳</div>
+            <span>Tarjeta QORE</span>
+        </div>
+        <div class="tab-item" id="nav-ripley" onclick="switchTab('tab-ripley')">
+            <div class="tab-icon">💳</div>
+            <span>Tarjeta Interbank</span>
         </div>
     </div>
 
@@ -490,15 +569,21 @@
         let gastos = [];
         let categoriaDetalleActiva = null;
         let recordatoriosProgramados = [];
+        let oroCicloSeleccionado = null;
+        let oroCategoriaSeleccionada = null;
+        let qoreCicloSeleccionado = null;
+        let qoreCategoriaSeleccionada = null;
+        let ripleyCicloSeleccionado = null;
+        let ripleyCategoriaSeleccionada = null;
 
         function obtenerFechaPago(fechaStr, metodoPago = null) {
             const [year, month, day] = fechaStr.split('-').map(Number);
-            const esRipley = metodoPago === 'Tarjeta Ripley';
+            const esInterbank = metodoPago === 'Tarjeta Interbank';
             let cicloMonth = month;
             let cicloYear = year;
 
-            if (esRipley) {
-                if (day <= 3) {
+            if (esInterbank) {
+                if (day <= 21) {
                     cicloMonth--;
                     if (cicloMonth < 1) {
                         cicloMonth = 12;
@@ -513,26 +598,16 @@
                 }
             }
 
-            let paymentMonth;
+            let paymentMonth = cicloMonth;
             let paymentYear = cicloYear;
-            if (esRipley) {
-                paymentMonth = day >= 4 ? month + 2 : month + 1;
-                while (paymentMonth > 12) {
-                    paymentMonth -= 12;
-                    paymentYear++;
-                }
-            } else {
+            let paymentDay = 17;
+            if (!esInterbank) {
                 paymentMonth = cicloMonth + 1;
                 if (paymentMonth > 12) {
                     paymentMonth = 1;
                     paymentYear++;
                 }
-            }
-
-            let paymentDay = 30;
-            if (paymentMonth === 2) {
-                const isLeap = (paymentYear % 4 === 0 && paymentYear % 100 !== 0) || (paymentYear % 400 === 0);
-                paymentDay = isLeap ? 29 : 28;
+                paymentDay = 30;
             }
 
             return new Date(paymentYear, paymentMonth - 1, paymentDay);
@@ -599,6 +674,29 @@
             };
         }
 
+        function cicloIdATiempo(cicloId) {
+            const [year, month] = cicloId.split('-').map(Number);
+            return year * 100 + month;
+        }
+
+        function generarCiclosEntre(cicloInicio, cicloFin) {
+            const ciclos = [];
+            let actual = cicloIdATiempo(cicloInicio);
+            const fin = cicloIdATiempo(cicloFin);
+
+            while (actual <= fin) {
+                const year = Math.floor(actual / 100);
+                const month = actual % 100;
+                ciclos.push(`${year}-${String(month).padStart(2, '0')}`);
+                actual += 1;
+                if (month === 12) {
+                    actual = (year + 1) * 100 + 1;
+                }
+            }
+
+            return ciclos;
+        }
+
         async function cargarGastosDesdeSupabase() {
             const { data, error } = await db
                 .from('gastos')
@@ -615,14 +713,7 @@
             solicitarPermisoNotificaciones();
             programarRecordatorios();
             actualizarUIRegistro();
-            popularFiltrosMesResumen();
-            popularFiltrosDetalle();
-            if (!document.getElementById('tab-resumen').classList.contains('hidden')) {
-                renderizarCiclos();
-            }
-            if (!document.getElementById('tab-detalle').classList.contains('hidden')) {
-                renderDetalleCompras();
-            }
+            renderTarjetaOro();
         }
 
         document.getElementById('fecha').valueAsDate = new Date();
@@ -630,23 +721,40 @@
 
         function switchTab(tabId) {
             document.getElementById('tab-registro').classList.add('hidden');
-            document.getElementById('tab-resumen').classList.add('hidden');
-            document.getElementById('tab-detalle').classList.add('hidden');
+            document.getElementById('tab-oro').classList.add('hidden');
+            document.getElementById('tab-qore').classList.add('hidden');
+            document.getElementById('tab-ripley').classList.add('hidden');
             document.getElementById(tabId).classList.remove('hidden');
 
             document.getElementById('nav-registro').classList.remove('active');
-            document.getElementById('nav-resumen').classList.remove('active');
-            document.getElementById('nav-detalle').classList.remove('active');
+            document.getElementById('nav-oro').classList.remove('active');
+            document.getElementById('nav-qore').classList.remove('active');
+            document.getElementById('nav-ripley').classList.remove('active');
+
+            const heroTitle = document.getElementById('hero-title');
+            if (heroTitle) {
+                if (tabId === 'tab-oro') {
+                    heroTitle.textContent = 'Tarjeta ORO';
+                } else if (tabId === 'tab-qore') {
+                    heroTitle.textContent = 'Tarjeta Qore';
+                } else if (tabId === 'tab-ripley') {
+                    heroTitle.textContent = 'Tarjeta Interbank';
+                } else {
+                    heroTitle.textContent = 'Gastos O&A';
+                }
+            }
             
             if(tabId === 'tab-registro') {
                 document.getElementById('nav-registro').classList.add('active');
-            } else if(tabId === 'tab-resumen') {
-                document.getElementById('nav-resumen').classList.add('active');
-                popularFiltrosMesResumen();
-                renderizarCiclos();
-            } else {
-                document.getElementById('nav-detalle').classList.add('active');
-                renderDetalleCompras();
+            } else if(tabId === 'tab-oro') {
+                document.getElementById('nav-oro').classList.add('active');
+                renderTarjetaOro();
+            } else if(tabId === 'tab-qore') {
+                document.getElementById('nav-qore').classList.add('active');
+                renderTarjetaQore();
+            } else if(tabId === 'tab-ripley') {
+                document.getElementById('nav-ripley').classList.add('active');
+                renderTarjetaRipley();
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -654,12 +762,12 @@
         // Determinar el ciclo de facturación según la tarjeta
         function getCicloInfo(fechaStr, metodoPago = null) {
             const [year, month, day] = fechaStr.split('-').map(Number);
-            const esRipley = metodoPago === 'Tarjeta Ripley';
+            const esInterbank = metodoPago === 'Tarjeta Interbank';
             let cicloMonth = month;
             let cicloYear = year;
             
-            if (esRipley) {
-                if (day <= 3) {
+            if (esInterbank) {
+                if (day <= 21) {
                     cicloMonth--;
                     if (cicloMonth < 1) {
                         cicloMonth = 12;
@@ -676,26 +784,17 @@
             
             const monthNames = ["", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
             
-            let paymentMonth;
+            let paymentMonth = cicloMonth;
             let paymentYear = cicloYear;
-            if (esRipley) {
-                paymentMonth = day >= 4 ? month + 2 : month + 1;
-                while (paymentMonth > 12) {
-                    paymentMonth -= 12;
-                    paymentYear++;
-                }
-            } else {
+            let paymentDay = 17;
+
+            if (!esInterbank) {
                 paymentMonth = cicloMonth + 1;
                 if (paymentMonth > 12) {
                     paymentMonth = 1;
                     paymentYear++;
                 }
-            }
-            
-            let paymentDay = 30;
-            if (paymentMonth === 2) {
-                const isLeap = (paymentYear % 4 === 0 && paymentYear % 100 !== 0) || (paymentYear % 400 === 0);
-                paymentDay = isLeap ? 29 : 28;
+                paymentDay = 30;
             }
             
             let mesNombre = monthNames[cicloMonth];
@@ -802,6 +901,7 @@
 
             gastos.push(filaASistema(data[0]));
             programarRecordatorios();
+            renderTarjetaOro();
 
             // Reset parcial
             document.getElementById('monto_total').value = '';
@@ -826,17 +926,17 @@
                 }
                 gastos = gastos.filter(g => g.id !== id);
                 actualizarUIRegistro();
-                if(!document.getElementById('tab-resumen').classList.contains('hidden')){
-                    renderizarCiclos();
-                }
-                if(!document.getElementById('tab-detalle').classList.contains('hidden')){
-                    renderDetalleCompras();
-                }
+                renderTarjetaOro();
             }
         }
 
         function actualizarUIRegistro() {
             const tbody = document.getElementById('tabla-gastos');
+            if (!tbody) {
+                popularFiltrosDetalle();
+                return;
+            }
+
             tbody.innerHTML = '';
             
             let gastosMostrar = [...gastos].reverse().slice(0, 15); // Solo últimos 15 en la principal
@@ -860,6 +960,686 @@
 
             popularFiltrosDetalle();
         }
+
+        function obtenerGastosActivosEnCiclo(gastosTarjeta, cicloSeleccionado, ciclos) {
+            return gastosTarjeta.filter(gasto => {
+                const cicloCompra = getCicloInfo(gasto.fecha, gasto.metodoPago).id;
+                if (cicloCompra === cicloSeleccionado) {
+                    return true;
+                }
+
+                if (Number(gasto.cuotas) <= 1) {
+                    return false;
+                }
+
+                const cicloInicialIndex = ciclos.indexOf(cicloCompra);
+                const cicloActualIndex = ciclos.indexOf(cicloSeleccionado);
+                const cuotaActual = cicloActualIndex - cicloInicialIndex + 1;
+
+                return cicloActualIndex >= cicloInicialIndex && cuotaActual <= Number(gasto.cuotas);
+            });
+        }
+
+        function renderTarjetaOro() {
+            const tab = document.getElementById('tab-oro');
+            if (!tab) return;
+
+            const gastosOro = gastos.filter(g => g.metodoPago === 'Tarjeta Oro');
+            const toggleBtn = document.getElementById('oro-ciclo-toggle');
+            const ciclosList = document.getElementById('oro-ciclos-list');
+            const totalEl = document.getElementById('oro-total');
+            const omarEl = document.getElementById('oro-pago-omar');
+            const abiEl = document.getElementById('oro-pago-abi');
+            const categoriasEl = document.getElementById('oro-categorias');
+            const cuotasEl = document.getElementById('oro-cuotas');
+            const gastosListEl = document.getElementById('oro-gastos-listado');
+
+            if (!gastosOro.length) {
+                if (toggleBtn) toggleBtn.textContent = 'Sin datos';
+                if (totalEl) totalEl.textContent = 'S/ 0.00';
+                if (omarEl) omarEl.textContent = 'S/ 0.00';
+                if (abiEl) abiEl.textContent = 'S/ 0.00';
+                if (categoriasEl) categoriasEl.innerHTML = '<div class="text-sm text-gray-500">No hay gastos para esta tarjeta.</div>';
+                if (cuotasEl) cuotasEl.innerHTML = '';
+                if (gastosListEl) gastosListEl.innerHTML = '';
+                return;
+            }
+
+            const ciclosBase = [...new Set(gastosOro.map(g => getCicloInfo(g.fecha, g.metodoPago).id))].sort();
+            const cicloInicio = ciclosBase[0];
+            const cicloFin = ciclosBase[ciclosBase.length - 1];
+            const ciclos = cicloInicio && cicloFin ? generarCiclosEntre(cicloInicio, cicloFin) : [];
+
+            if (!oroCicloSeleccionado || !ciclos.includes(oroCicloSeleccionado)) {
+                oroCicloSeleccionado = ciclos[ciclos.length - 1] || null;
+            }
+
+            if (toggleBtn) {
+                toggleBtn.textContent = oroCicloSeleccionado || 'Seleccionar';
+            }
+
+            if (ciclosList) {
+                ciclosList.innerHTML = ciclos.slice().reverse().map(ciclo => `
+                    <button type="button" class="block w-full text-left text-sm py-2 px-2 rounded ${ciclo === oroCicloSeleccionado ? 'bg-[#0a84ff] text-white' : 'text-gray-300'}" onclick="seleccionarCicloOro('${ciclo}')">
+                        ${ciclo}
+                    </button>
+                `).join('');
+            }
+
+            const gastosCiclo = obtenerGastosActivosEnCiclo(gastosOro, oroCicloSeleccionado, ciclos);
+            const cuotasDelCiclo = gastosCiclo.filter(g => Number(g.cuotas) > 1).map(gasto => {
+                const inicial = getCicloInfo(gasto.fecha, gasto.metodoPago).id;
+                const cicloInicialIndex = ciclos.indexOf(inicial);
+                const cicloActualIndex = ciclos.indexOf(oroCicloSeleccionado);
+                const cuotaActual = cicloActualIndex - cicloInicialIndex + 1;
+                const mostrar = cicloActualIndex >= cicloInicialIndex && cuotaActual <= Number(gasto.cuotas);
+                if (!mostrar) {
+                    return null;
+                }
+                const montoCuotaTotal = Number(gasto.montoTotal) / Number(gasto.cuotas);
+                return {
+                    total: montoCuotaTotal,
+                    omar: montoCuotaTotal * (Number(gasto.porcentajeOmar) / 100),
+                    abi: montoCuotaTotal * (Number(gasto.porcentajeAbigail) / 100)
+                };
+            }).filter(Boolean);
+
+            const total = [...gastosCiclo.filter(g => Number(g.cuotas) <= 1), ...cuotasDelCiclo].reduce((sum, item) => {
+                if (typeof item === 'object' && item !== null && 'total' in item) {
+                    return sum + item.total;
+                }
+                return sum + Number(item.montoTotal);
+            }, 0);
+            const totalOmar = [...gastosCiclo.filter(g => Number(g.cuotas) <= 1), ...cuotasDelCiclo].reduce((sum, item) => {
+                if (typeof item === 'object' && item !== null && 'omar' in item) {
+                    return sum + item.omar;
+                }
+                return sum + Number(item.pagoOmar);
+            }, 0);
+            const totalAbi = [...gastosCiclo.filter(g => Number(g.cuotas) <= 1), ...cuotasDelCiclo].reduce((sum, item) => {
+                if (typeof item === 'object' && item !== null && 'abi' in item) {
+                    return sum + item.abi;
+                }
+                return sum + Number(item.pagoAbigail);
+            }, 0);
+
+            if (totalEl) totalEl.textContent = `S/ ${total.toFixed(2)}`;
+            if (omarEl) omarEl.textContent = `S/ ${totalOmar.toFixed(2)}`;
+            if (abiEl) abiEl.textContent = `S/ ${totalAbi.toFixed(2)}`;
+
+            const categorias = [...new Set(gastosCiclo.map(g => g.concepto))];
+            if (!categorias.includes(oroCategoriaSeleccionada) && oroCategoriaSeleccionada) {
+                oroCategoriaSeleccionada = null;
+            }
+
+            if (categoriasEl) {
+                categoriasEl.innerHTML = categorias.map(categoria => {
+                    const categoriaTotal = gastosCiclo
+                        .filter(g => g.concepto === categoria)
+                        .reduce((sum, g) => {
+                            if (Number(g.cuotas) > 1) {
+                                const inicial = getCicloInfo(g.fecha, g.metodoPago).id;
+                                const cicloInicialIndex = ciclos.indexOf(inicial);
+                                const cicloActualIndex = ciclos.indexOf(oroCicloSeleccionado);
+                                const cuotaActual = cicloActualIndex - cicloInicialIndex + 1;
+                                const mostrar = cicloActualIndex >= cicloInicialIndex && cuotaActual <= Number(g.cuotas);
+                                if (!mostrar) {
+                                    return sum;
+                                }
+                                return sum + (Number(g.montoTotal) / Number(g.cuotas));
+                            }
+                            return sum + Number(g.montoTotal);
+                        }, 0);
+                    const active = oroCategoriaSeleccionada === categoria ? 'active' : '';
+                    return `
+                        <button type="button" class="oro-category-btn ${active}" onclick="seleccionarCategoriaOro('${categoria}')">
+                            <span class="text-[11px] uppercase tracking-[0.2em] text-[#8e8e93]">${categoria}</span>
+                            <span class="text-base font-semibold text-white">S/ ${categoriaTotal.toFixed(2)}</span>
+                        </button>
+                    `;
+                }).join('');
+            }
+
+            const gastosFiltrados = oroCategoriaSeleccionada
+                ? gastosCiclo.filter(g => g.concepto === oroCategoriaSeleccionada)
+                : gastosCiclo;
+
+            if (cuotasEl) {
+                const cuotas = gastosCiclo.filter(g => Number(g.cuotas) > 1).map(gasto => {
+                    const inicial = getCicloInfo(gasto.fecha, gasto.metodoPago).id;
+                    const cicloInicialIndex = ciclos.indexOf(inicial);
+                    const cicloActualIndex = ciclos.indexOf(oroCicloSeleccionado);
+                    const cuotaActual = cicloActualIndex - cicloInicialIndex + 1;
+                    const mostrar = cicloActualIndex >= cicloInicialIndex && cuotaActual <= Number(gasto.cuotas);
+
+                    if (!mostrar) {
+                        return null;
+                    }
+
+                    const montoCuotaTotal = Number(gasto.montoTotal) / Number(gasto.cuotas);
+                    const montoCuotaOmar = montoCuotaTotal * (Number(gasto.porcentajeOmar) / 100);
+                    const montoCuotaAbi = montoCuotaTotal * (Number(gasto.porcentajeAbigail) / 100);
+                    const progreso = Math.min(100, Math.round((cuotaActual / Number(gasto.cuotas)) * 100));
+                    return `
+                        <div class="oro-card py-3">
+                            <div class="flex justify-between items-start gap-2">
+                                <div class="min-w-0">
+                                    <div class="text-white font-medium text-sm">${gasto.tienda}</div>
+                                    <div class="text-[10px] text-gray-500 mt-1">${gasto.fecha.split('-').slice(1).reverse().join('/')} · ${gasto.concepto}</div>
+                                </div>
+                                <div class="text-right text-[10px] text-gray-400 whitespace-nowrap">
+                                    <div>Total compra</div>
+                                    <div>S/ ${Number(gasto.montoTotal).toFixed(2)}</div>
+                                </div>
+                            </div>
+                            <div class="mt-2 rounded-lg bg-[#121212] px-2 py-2 text-center">
+                                <div class="text-[10px] uppercase tracking-[0.2em] text-[#8e8e93]">Cuota ${cuotaActual}/${gasto.cuotas}</div>
+                                <div class="text-base font-semibold text-white">S/ ${montoCuotaTotal.toFixed(2)}</div>
+                            </div>
+                            <div class="mt-2 flex justify-between text-[11px]">
+                                <span class="text-[#0a84ff]">Omar: S/ ${montoCuotaOmar.toFixed(2)}</span>
+                                <span class="text-[#ff375f]">Abi: S/ ${montoCuotaAbi.toFixed(2)}</span>
+                            </div>
+                            <div class="oro-progress mt-2">
+                                <div style="width: ${progreso}%;"></div>
+                            </div>
+                        </div>
+                    `;
+                }).filter(Boolean).join('');
+
+                cuotasEl.innerHTML = cuotas.length === 0
+                    ? '<div class="text-sm text-gray-500">No hay compras en cuotas en este ciclo.</div>'
+                    : cuotas;
+            }
+
+            if (gastosListEl) {
+                gastosListEl.innerHTML = gastosFiltrados.length === 0
+                    ? '<div class="text-sm text-gray-500">No hay gastos para esta categoría.</div>'
+                    : gastosFiltrados.map(gasto => {
+                        let montoMostrar = Number(gasto.montoTotal);
+                        if (Number(gasto.cuotas) > 1) {
+                            const inicial = getCicloInfo(gasto.fecha, gasto.metodoPago).id;
+                            const cicloInicialIndex = ciclos.indexOf(inicial);
+                            const cicloActualIndex = ciclos.indexOf(oroCicloSeleccionado);
+                            const cuotaActual = cicloActualIndex - cicloInicialIndex + 1;
+                            const mostrar = cicloActualIndex >= cicloInicialIndex && cuotaActual <= Number(gasto.cuotas);
+                            if (!mostrar) {
+                                montoMostrar = 0;
+                            } else {
+                                montoMostrar = Number(gasto.montoTotal) / Number(gasto.cuotas);
+                            }
+                        }
+                        return `
+                            <div class="oro-card flex justify-between items-start gap-3">
+                                <div>
+                                    <div class="text-white font-medium">${gasto.tienda}</div>
+                                    <div class="text-[11px] text-gray-500 mt-1">${gasto.fecha.split('-').slice(1).reverse().join('/')} · ${gasto.concepto}</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-white font-medium">S/ ${montoMostrar.toFixed(2)}</div>
+                                    <div class="text-[11px] text-gray-500">${gasto.metodoPago}</div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+            }
+        }
+
+        function seleccionarCicloOro(cicloId) {
+            oroCicloSeleccionado = cicloId;
+            document.getElementById('oro-ciclos-list').classList.add('hidden');
+            renderTarjetaOro();
+        }
+
+        function seleccionarCategoriaOro(categoria) {
+            oroCategoriaSeleccionada = categoria;
+            renderTarjetaOro();
+        }
+
+        document.getElementById('oro-ciclo-toggle').addEventListener('click', () => {
+            const list = document.getElementById('oro-ciclos-list');
+            if (list) {
+                list.classList.toggle('hidden');
+            }
+        });
+
+        function renderTarjetaQore() {
+            const tab = document.getElementById('tab-qore');
+            if (!tab) return;
+
+            const gastosQore = gastos.filter(g => g.metodoPago === 'Tarjeta Qore');
+            const toggleBtn = document.getElementById('qore-ciclo-toggle');
+            const ciclosList = document.getElementById('qore-ciclos-list');
+            const totalEl = document.getElementById('qore-total');
+            const omarEl = document.getElementById('qore-pago-omar');
+            const abiEl = document.getElementById('qore-pago-abi');
+            const categoriasEl = document.getElementById('qore-categorias');
+            const cuotasEl = document.getElementById('qore-cuotas');
+            const gastosListEl = document.getElementById('qore-gastos-listado');
+
+            if (!gastosQore.length) {
+                if (toggleBtn) toggleBtn.textContent = 'Sin datos';
+                if (totalEl) totalEl.textContent = 'S/ 0.00';
+                if (omarEl) omarEl.textContent = 'S/ 0.00';
+                if (abiEl) abiEl.textContent = 'S/ 0.00';
+                if (categoriasEl) categoriasEl.innerHTML = '<div class="text-sm text-gray-500">No hay gastos para esta tarjeta.</div>';
+                if (cuotasEl) cuotasEl.innerHTML = '';
+                if (gastosListEl) gastosListEl.innerHTML = '';
+                return;
+            }
+
+            const ciclosBase = [...new Set(gastosQore.map(g => getCicloInfo(g.fecha, g.metodoPago).id))].sort();
+            const cicloInicio = ciclosBase[0];
+            const cicloFin = ciclosBase[ciclosBase.length - 1];
+            const ciclos = cicloInicio && cicloFin ? generarCiclosEntre(cicloInicio, cicloFin) : [];
+
+            if (!qoreCicloSeleccionado || !ciclos.includes(qoreCicloSeleccionado)) {
+                qoreCicloSeleccionado = ciclos[ciclos.length - 1] || null;
+            }
+
+            if (toggleBtn) {
+                toggleBtn.textContent = qoreCicloSeleccionado || 'Seleccionar';
+            }
+
+            if (ciclosList) {
+                ciclosList.innerHTML = ciclos.slice().reverse().map(ciclo => `
+                    <button type="button" class="block w-full text-left text-sm py-2 px-2 rounded ${ciclo === qoreCicloSeleccionado ? 'bg-[#0a84ff] text-white' : 'text-gray-300'}" onclick="seleccionarCicloQore('${ciclo}')">
+                        ${ciclo}
+                    </button>
+                `).join('');
+            }
+
+            const gastosCiclo = obtenerGastosActivosEnCiclo(gastosQore, qoreCicloSeleccionado, ciclos);
+            const cuotasDelCiclo = gastosCiclo.filter(g => Number(g.cuotas) > 1).map(gasto => {
+                const inicial = getCicloInfo(gasto.fecha, gasto.metodoPago).id;
+                const cicloInicialIndex = ciclos.indexOf(inicial);
+                const cicloActualIndex = ciclos.indexOf(qoreCicloSeleccionado);
+                const cuotaActual = cicloActualIndex - cicloInicialIndex + 1;
+                const mostrar = cicloActualIndex >= cicloInicialIndex && cuotaActual <= Number(gasto.cuotas);
+                if (!mostrar) {
+                    return null;
+                }
+                const montoCuotaTotal = Number(gasto.montoTotal) / Number(gasto.cuotas);
+                return {
+                    total: montoCuotaTotal,
+                    omar: montoCuotaTotal * (Number(gasto.porcentajeOmar) / 100),
+                    abi: montoCuotaTotal * (Number(gasto.porcentajeAbigail) / 100)
+                };
+            }).filter(Boolean);
+
+            const total = [...gastosCiclo.filter(g => Number(g.cuotas) <= 1), ...cuotasDelCiclo].reduce((sum, item) => {
+                if (typeof item === 'object' && item !== null && 'total' in item) {
+                    return sum + item.total;
+                }
+                return sum + Number(item.montoTotal);
+            }, 0);
+            const totalOmar = [...gastosCiclo.filter(g => Number(g.cuotas) <= 1), ...cuotasDelCiclo].reduce((sum, item) => {
+                if (typeof item === 'object' && item !== null && 'omar' in item) {
+                    return sum + item.omar;
+                }
+                return sum + Number(item.pagoOmar);
+            }, 0);
+            const totalAbi = [...gastosCiclo.filter(g => Number(g.cuotas) <= 1), ...cuotasDelCiclo].reduce((sum, item) => {
+                if (typeof item === 'object' && item !== null && 'abi' in item) {
+                    return sum + item.abi;
+                }
+                return sum + Number(item.pagoAbigail);
+            }, 0);
+
+            if (totalEl) totalEl.textContent = `S/ ${total.toFixed(2)}`;
+            if (omarEl) omarEl.textContent = `S/ ${totalOmar.toFixed(2)}`;
+            if (abiEl) abiEl.textContent = `S/ ${totalAbi.toFixed(2)}`;
+
+            const categorias = [...new Set(gastosCiclo.map(g => g.concepto))];
+            if (!categorias.includes(qoreCategoriaSeleccionada) && qoreCategoriaSeleccionada) {
+                qoreCategoriaSeleccionada = null;
+            }
+
+            if (categoriasEl) {
+                categoriasEl.innerHTML = categorias.map(categoria => {
+                    const categoriaTotal = gastosCiclo.filter(g => g.concepto === categoria).reduce((sum, g) => {
+                        if (Number(g.cuotas) > 1) {
+                            const inicial = getCicloInfo(g.fecha, g.metodoPago).id;
+                            const cicloInicialIndex = ciclos.indexOf(inicial);
+                            const cicloActualIndex = ciclos.indexOf(qoreCicloSeleccionado);
+                            const cuotaActual = cicloActualIndex - cicloInicialIndex + 1;
+                            const mostrar = cicloActualIndex >= cicloInicialIndex && cuotaActual <= Number(g.cuotas);
+                            if (!mostrar) {
+                                return sum;
+                            }
+                            return sum + (Number(g.montoTotal) / Number(g.cuotas));
+                        }
+                        return sum + Number(g.montoTotal);
+                    }, 0);
+                    const active = qoreCategoriaSeleccionada === categoria ? 'active' : '';
+                    return `
+                        <button type="button" class="oro-category-btn ${active}" onclick="seleccionarCategoriaQore('${categoria}')">
+                            <span class="text-[11px] uppercase tracking-[0.2em] text-[#8e8e93]">${categoria}</span>
+                            <span class="text-base font-semibold text-white">S/ ${categoriaTotal.toFixed(2)}</span>
+                        </button>
+                    `;
+                }).join('');
+            }
+
+            const gastosFiltrados = qoreCategoriaSeleccionada
+                ? gastosCiclo.filter(g => g.concepto === qoreCategoriaSeleccionada)
+                : gastosCiclo;
+
+            if (cuotasEl) {
+                const cuotas = gastosCiclo.filter(g => Number(g.cuotas) > 1).map(gasto => {
+                    const inicial = getCicloInfo(gasto.fecha, gasto.metodoPago).id;
+                    const cicloInicialIndex = ciclos.indexOf(inicial);
+                    const cicloActualIndex = ciclos.indexOf(qoreCicloSeleccionado);
+                    const cuotaActual = cicloActualIndex - cicloInicialIndex + 1;
+                    const mostrar = cicloActualIndex >= cicloInicialIndex && cuotaActual <= Number(gasto.cuotas);
+                    if (!mostrar) {
+                        return null;
+                    }
+                    const montoCuotaTotal = Number(gasto.montoTotal) / Number(gasto.cuotas);
+                    const montoCuotaOmar = montoCuotaTotal * (Number(gasto.porcentajeOmar) / 100);
+                    const montoCuotaAbi = montoCuotaTotal * (Number(gasto.porcentajeAbigail) / 100);
+                    const progreso = Math.min(100, Math.round((cuotaActual / Number(gasto.cuotas)) * 100));
+                    return `
+                        <div class="oro-card py-3">
+                            <div class="flex justify-between items-start gap-2">
+                                <div class="min-w-0">
+                                    <div class="text-white font-medium text-sm">${gasto.tienda}</div>
+                                    <div class="text-[10px] text-gray-500 mt-1">${gasto.fecha.split('-').slice(1).reverse().join('/')} · ${gasto.concepto}</div>
+                                </div>
+                                <div class="text-right text-[10px] text-gray-400 whitespace-nowrap">
+                                    <div>Total compra</div>
+                                    <div>S/ ${Number(gasto.montoTotal).toFixed(2)}</div>
+                                </div>
+                            </div>
+                            <div class="mt-2 rounded-lg bg-[#121212] px-2 py-2 text-center">
+                                <div class="text-[10px] uppercase tracking-[0.2em] text-[#8e8e93]">Cuota ${cuotaActual}/${gasto.cuotas}</div>
+                                <div class="text-base font-semibold text-white">S/ ${montoCuotaTotal.toFixed(2)}</div>
+                            </div>
+                            <div class="mt-2 flex justify-between text-[11px]">
+                                <span class="text-[#0a84ff]">Omar: S/ ${montoCuotaOmar.toFixed(2)}</span>
+                                <span class="text-[#ff375f]">Abi: S/ ${montoCuotaAbi.toFixed(2)}</span>
+                            </div>
+                            <div class="oro-progress mt-2">
+                                <div style="width: ${progreso}%;"></div>
+                            </div>
+                        </div>
+                    `;
+                }).filter(Boolean).join('');
+
+                cuotasEl.innerHTML = cuotas.length === 0
+                    ? '<div class="text-sm text-gray-500">No hay compras en cuotas en este ciclo.</div>'
+                    : cuotas;
+            }
+
+            if (gastosListEl) {
+                gastosListEl.innerHTML = gastosFiltrados.length === 0
+                    ? '<div class="text-sm text-gray-500">No hay gastos para esta categoría.</div>'
+                    : gastosFiltrados.map(gasto => {
+                        let montoMostrar = Number(gasto.montoTotal);
+                        if (Number(gasto.cuotas) > 1) {
+                            const inicial = getCicloInfo(gasto.fecha, gasto.metodoPago).id;
+                            const cicloInicialIndex = ciclos.indexOf(inicial);
+                            const cicloActualIndex = ciclos.indexOf(qoreCicloSeleccionado);
+                            const cuotaActual = cicloActualIndex - cicloInicialIndex + 1;
+                            const mostrar = cicloActualIndex >= cicloInicialIndex && cuotaActual <= Number(gasto.cuotas);
+                            if (!mostrar) {
+                                montoMostrar = 0;
+                            } else {
+                                montoMostrar = Number(gasto.montoTotal) / Number(gasto.cuotas);
+                            }
+                        }
+                        return `
+                            <div class="oro-card flex justify-between items-start gap-3">
+                                <div>
+                                    <div class="text-white font-medium">${gasto.tienda}</div>
+                                    <div class="text-[11px] text-gray-500 mt-1">${gasto.fecha.split('-').slice(1).reverse().join('/')} · ${gasto.concepto}</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-white font-medium">S/ ${montoMostrar.toFixed(2)}</div>
+                                    <div class="text-[11px] text-gray-500">${gasto.metodoPago}</div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+            }
+        }
+
+        function seleccionarCicloQore(cicloId) {
+            qoreCicloSeleccionado = cicloId;
+            document.getElementById('qore-ciclos-list').classList.add('hidden');
+            renderTarjetaQore();
+        }
+
+        function seleccionarCategoriaQore(categoria) {
+            qoreCategoriaSeleccionada = categoria;
+            renderTarjetaQore();
+        }
+
+        document.getElementById('qore-ciclo-toggle').addEventListener('click', () => {
+            const list = document.getElementById('qore-ciclos-list');
+            if (list) {
+                list.classList.toggle('hidden');
+            }
+        });
+
+        function renderTarjetaRipley() {
+            const tab = document.getElementById('tab-ripley');
+            if (!tab) return;
+
+            const gastosRipley = gastos.filter(g => g.metodoPago === 'Tarjeta Interbank');
+            const toggleBtn = document.getElementById('ripley-ciclo-toggle');
+            const ciclosList = document.getElementById('ripley-ciclos-list');
+            const totalEl = document.getElementById('ripley-total');
+            const omarEl = document.getElementById('ripley-pago-omar');
+            const abiEl = document.getElementById('ripley-pago-abi');
+            const categoriasEl = document.getElementById('ripley-categorias');
+            const cuotasEl = document.getElementById('ripley-cuotas');
+            const gastosListEl = document.getElementById('ripley-gastos-listado');
+
+            if (!gastosRipley.length) {
+                if (toggleBtn) toggleBtn.textContent = 'Sin datos';
+                if (totalEl) totalEl.textContent = 'S/ 0.00';
+                if (omarEl) omarEl.textContent = 'S/ 0.00';
+                if (abiEl) abiEl.textContent = 'S/ 0.00';
+                if (categoriasEl) categoriasEl.innerHTML = '<div class="text-sm text-gray-500">No hay gastos para esta tarjeta.</div>';
+                if (cuotasEl) cuotasEl.innerHTML = '';
+                if (gastosListEl) gastosListEl.innerHTML = '';
+                return;
+            }
+
+            const ciclosBase = [...new Set(gastosRipley.map(g => getCicloInfo(g.fecha, g.metodoPago).id))].sort();
+            const cicloInicio = ciclosBase[0];
+            const cicloFin = ciclosBase[ciclosBase.length - 1];
+            const ciclos = cicloInicio && cicloFin ? generarCiclosEntre(cicloInicio, cicloFin) : [];
+
+            if (!ripleyCicloSeleccionado || !ciclos.includes(ripleyCicloSeleccionado)) {
+                ripleyCicloSeleccionado = ciclos[ciclos.length - 1] || null;
+            }
+
+            if (toggleBtn) {
+                toggleBtn.textContent = ripleyCicloSeleccionado || 'Seleccionar';
+            }
+
+            if (ciclosList) {
+                ciclosList.innerHTML = ciclos.slice().reverse().map(ciclo => `
+                    <button type="button" class="block w-full text-left text-sm py-2 px-2 rounded ${ciclo === ripleyCicloSeleccionado ? 'bg-[#0a84ff] text-white' : 'text-gray-300'}" onclick="seleccionarCicloRipley('${ciclo}')">
+                        ${ciclo}
+                    </button>
+                `).join('');
+            }
+
+            const gastosCiclo = obtenerGastosActivosEnCiclo(gastosRipley, ripleyCicloSeleccionado, ciclos);
+            const cuotasDelCiclo = gastosCiclo.filter(g => Number(g.cuotas) > 1).map(gasto => {
+                const inicial = getCicloInfo(gasto.fecha, gasto.metodoPago).id;
+                const cicloInicialIndex = ciclos.indexOf(inicial);
+                const cicloActualIndex = ciclos.indexOf(ripleyCicloSeleccionado);
+                const cuotaActual = cicloActualIndex - cicloInicialIndex + 1;
+                const mostrar = cicloActualIndex >= cicloInicialIndex && cuotaActual <= Number(gasto.cuotas);
+                if (!mostrar) {
+                    return null;
+                }
+                const montoCuotaTotal = Number(gasto.montoTotal) / Number(gasto.cuotas);
+                return {
+                    total: montoCuotaTotal,
+                    omar: montoCuotaTotal * (Number(gasto.porcentajeOmar) / 100),
+                    abi: montoCuotaTotal * (Number(gasto.porcentajeAbigail) / 100)
+                };
+            }).filter(Boolean);
+
+            const total = [...gastosCiclo.filter(g => Number(g.cuotas) <= 1), ...cuotasDelCiclo].reduce((sum, item) => {
+                if (typeof item === 'object' && item !== null && 'total' in item) {
+                    return sum + item.total;
+                }
+                return sum + Number(item.montoTotal);
+            }, 0);
+            const totalOmar = [...gastosCiclo.filter(g => Number(g.cuotas) <= 1), ...cuotasDelCiclo].reduce((sum, item) => {
+                if (typeof item === 'object' && item !== null && 'omar' in item) {
+                    return sum + item.omar;
+                }
+                return sum + Number(item.pagoOmar);
+            }, 0);
+            const totalAbi = [...gastosCiclo.filter(g => Number(g.cuotas) <= 1), ...cuotasDelCiclo].reduce((sum, item) => {
+                if (typeof item === 'object' && item !== null && 'abi' in item) {
+                    return sum + item.abi;
+                }
+                return sum + Number(item.pagoAbigail);
+            }, 0);
+
+            if (totalEl) totalEl.textContent = `S/ ${total.toFixed(2)}`;
+            if (omarEl) omarEl.textContent = `S/ ${totalOmar.toFixed(2)}`;
+            if (abiEl) abiEl.textContent = `S/ ${totalAbi.toFixed(2)}`;
+
+            const categorias = [...new Set(gastosCiclo.map(g => g.concepto))];
+            if (!categorias.includes(ripleyCategoriaSeleccionada) && ripleyCategoriaSeleccionada) {
+                ripleyCategoriaSeleccionada = null;
+            }
+
+            if (categoriasEl) {
+                categoriasEl.innerHTML = categorias.map(categoria => {
+                    const categoriaTotal = gastosCiclo.filter(g => g.concepto === categoria).reduce((sum, g) => {
+                        if (Number(g.cuotas) > 1) {
+                            const inicial = getCicloInfo(g.fecha, g.metodoPago).id;
+                            const cicloInicialIndex = ciclos.indexOf(inicial);
+                            const cicloActualIndex = ciclos.indexOf(ripleyCicloSeleccionado);
+                            const cuotaActual = cicloActualIndex - cicloInicialIndex + 1;
+                            const mostrar = cicloActualIndex >= cicloInicialIndex && cuotaActual <= Number(g.cuotas);
+                            if (!mostrar) {
+                                return sum;
+                            }
+                            return sum + (Number(g.montoTotal) / Number(g.cuotas));
+                        }
+                        return sum + Number(g.montoTotal);
+                    }, 0);
+                    const active = ripleyCategoriaSeleccionada === categoria ? 'active' : '';
+                    return `
+                        <button type="button" class="oro-category-btn ${active}" onclick="seleccionarCategoriaRipley('${categoria}')">
+                            <span class="text-[11px] uppercase tracking-[0.2em] text-[#8e8e93]">${categoria}</span>
+                            <span class="text-base font-semibold text-white">S/ ${categoriaTotal.toFixed(2)}</span>
+                        </button>
+                    `;
+                }).join('');
+            }
+
+            const gastosFiltrados = ripleyCategoriaSeleccionada
+                ? gastosCiclo.filter(g => g.concepto === ripleyCategoriaSeleccionada)
+                : gastosCiclo;
+
+            if (cuotasEl) {
+                const cuotas = gastosCiclo.filter(g => Number(g.cuotas) > 1).map(gasto => {
+                    const inicial = getCicloInfo(gasto.fecha, gasto.metodoPago).id;
+                    const cicloInicialIndex = ciclos.indexOf(inicial);
+                    const cicloActualIndex = ciclos.indexOf(ripleyCicloSeleccionado);
+                    const cuotaActual = cicloActualIndex - cicloInicialIndex + 1;
+                    const mostrar = cicloActualIndex >= cicloInicialIndex && cuotaActual <= Number(gasto.cuotas);
+                    if (!mostrar) {
+                        return null;
+                    }
+                    const montoCuotaTotal = Number(gasto.montoTotal) / Number(gasto.cuotas);
+                    const montoCuotaOmar = montoCuotaTotal * (Number(gasto.porcentajeOmar) / 100);
+                    const montoCuotaAbi = montoCuotaTotal * (Number(gasto.porcentajeAbigail) / 100);
+                    const progreso = Math.min(100, Math.round((cuotaActual / Number(gasto.cuotas)) * 100));
+                    return `
+                        <div class="oro-card py-3">
+                            <div class="flex justify-between items-start gap-2">
+                                <div class="min-w-0">
+                                    <div class="text-white font-medium text-sm">${gasto.tienda}</div>
+                                    <div class="text-[10px] text-gray-500 mt-1">${gasto.fecha.split('-').slice(1).reverse().join('/')} · ${gasto.concepto}</div>
+                                </div>
+                                <div class="text-right text-[10px] text-gray-400 whitespace-nowrap">
+                                    <div>Total compra</div>
+                                    <div>S/ ${Number(gasto.montoTotal).toFixed(2)}</div>
+                                </div>
+                            </div>
+                            <div class="mt-2 rounded-lg bg-[#121212] px-2 py-2 text-center">
+                                <div class="text-[10px] uppercase tracking-[0.2em] text-[#8e8e93]">Cuota ${cuotaActual}/${gasto.cuotas}</div>
+                                <div class="text-base font-semibold text-white">S/ ${montoCuotaTotal.toFixed(2)}</div>
+                            </div>
+                            <div class="mt-2 flex justify-between text-[11px]">
+                                <span class="text-[#0a84ff]">Omar: S/ ${montoCuotaOmar.toFixed(2)}</span>
+                                <span class="text-[#ff375f]">Abi: S/ ${montoCuotaAbi.toFixed(2)}</span>
+                            </div>
+                            <div class="oro-progress mt-2">
+                                <div style="width: ${progreso}%;"></div>
+                            </div>
+                        </div>
+                    `;
+                }).filter(Boolean).join('');
+
+                cuotasEl.innerHTML = cuotas.length === 0
+                    ? '<div class="text-sm text-gray-500">No hay compras en cuotas en este ciclo.</div>'
+                    : cuotas;
+            }
+
+            if (gastosListEl) {
+                gastosListEl.innerHTML = gastosFiltrados.length === 0
+                    ? '<div class="text-sm text-gray-500">No hay gastos para esta categoría.</div>'
+                    : gastosFiltrados.map(gasto => {
+                        let montoMostrar = Number(gasto.montoTotal);
+                        if (Number(gasto.cuotas) > 1) {
+                            const inicial = getCicloInfo(gasto.fecha, gasto.metodoPago).id;
+                            const cicloInicialIndex = ciclos.indexOf(inicial);
+                            const cicloActualIndex = ciclos.indexOf(ripleyCicloSeleccionado);
+                            const cuotaActual = cicloActualIndex - cicloInicialIndex + 1;
+                            const mostrar = cicloActualIndex >= cicloInicialIndex && cuotaActual <= Number(gasto.cuotas);
+                            if (!mostrar) {
+                                montoMostrar = 0;
+                            } else {
+                                montoMostrar = Number(gasto.montoTotal) / Number(gasto.cuotas);
+                            }
+                        }
+                        return `
+                            <div class="oro-card flex justify-between items-start gap-3">
+                                <div>
+                                    <div class="text-white font-medium">${gasto.tienda}</div>
+                                    <div class="text-[11px] text-gray-500 mt-1">${gasto.fecha.split('-').slice(1).reverse().join('/')} · ${gasto.concepto}</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-white font-medium">S/ ${montoMostrar.toFixed(2)}</div>
+                                    <div class="text-[11px] text-gray-500">${gasto.metodoPago}</div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+            }
+        }
+
+        function seleccionarCicloRipley(cicloId) {
+            ripleyCicloSeleccionado = cicloId;
+            document.getElementById('ripley-ciclos-list').classList.add('hidden');
+            renderTarjetaRipley();
+        }
+
+        function seleccionarCategoriaRipley(categoria) {
+            ripleyCategoriaSeleccionada = categoria;
+            renderTarjetaRipley();
+        }
+
+        document.getElementById('ripley-ciclo-toggle').addEventListener('click', () => {
+            const list = document.getElementById('ripley-ciclos-list');
+            if (list) {
+                list.classList.toggle('hidden');
+            }
+        });
 
         function popularFiltrosMesResumen() {
             const filtroCiclo = document.getElementById('filtro-ciclo');
@@ -1238,45 +2018,6 @@
                 `;
                 contenedor.innerHTML += cicloHtml;
             });
-        }
-
-        function exportarExcel() {
-            if (gastos.length === 0) return alert('No hay datos.');
-
-            const filas = [
-                ['Fecha Compra', 'Ciclo Facturación', 'Fecha de Pago', 'Descripción Extra', 'Categoría', 'Método de Pago', 'Monto Total', 'Aporte Omar', 'Aporte Abigail'],
-                ...gastos.map(g => {
-                    const info = getCicloInfo(g.fecha, g.metodoPago);
-                    return [
-                        g.fecha,
-                        info.nombre,
-                        info.fechaPago,
-                        g.tienda,
-                        g.concepto,
-                        g.metodoPago,
-                        g.montoTotal,
-                        g.pagoOmar,
-                        g.pagoAbigail
-                    ];
-                })
-            ];
-
-            const csv = filas.map(row =>
-                row.map(value => {
-                    const texto = String(value ?? '').replace(/"/g, '""');
-                    return `"${texto}"`;
-                }).join(',')
-            ).join('\r\n');
-
-            const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `Gastos_OyA_${new Date().toISOString().split('T')[0]}.csv`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
         }
 
         actualizarUIRegistro();
